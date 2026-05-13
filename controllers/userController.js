@@ -63,7 +63,7 @@ export async function loginUser(req, res) {
                 image: user.image
             }, process.env.JWT_SECRET_KEY)
 
-            res.json({message: "Login successful", token: token})
+            res.json({message: "Login successful", token: token , isAdmin: user.isAdmin})
         }else{
             res.status(401).json({message: "Invalid password"})
         }
