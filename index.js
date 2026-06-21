@@ -1,44 +1,54 @@
-import express from 'express';
-import mongoose from 'mongoose';
-import userRouter from './routers/userRouter.js';
-import jwt from "jsonwebtoken"
-import authenticate from "./middlewares/authenticate.js"
-import productRouter from "./routers/productRouter.js"
-import dotenv from "dotenv"
-import cors from "cors"
-
-dotenv.config()
-
+import express from "express";
+import mongoose from "mongoose";
+import cors from "cors";
+import dotenv from "dotenv";
 import dns from "node:dns";
 
-dns.setServers(["1.1.1.1", "8.8.8.8"]);
+// Routers
+import userRouter from "./routers/userRouter.js";
 
+import bookingRouter from "./routers/bookingRouter.js";
 
-const mongodbURI = process.env.MONGO_URI 
+// Middleware
+import authenticate from "./middlewares/authenticate.js";
 
-mongoose.connect(mongodbURI).then(() => {
-  console.log('Connected to MongoDB')
-    }
-)
+dotenv.config();
+
+// DNS Fix for MongoDB Atlas
+dns.setServers(["8.8.8.8", "1.1.1.1"]);
 
 const app = express();
 
+// Middlewares
 app.use(cors());
-
 app.use(express.json());
 
+// ===============================
+// Public Routes (No Token Needed)
+// ===============================
+app.use("/api/users", userRouter);
+
+// ===============================
+// Protected Routes (Token Needed)
+// ===============================
 app.use(authenticate);
 
-app.use("/api/users", userRouter)
-app.use("/api/products", productRouter)
 
+app.use("/api/bookings", bookingRouter);
 
+// MongoDB Connection
+mongoose
+  .connect(process.env.MONGO_URI)
+  .then(() => {
+    console.log("MongoDB Connected");
+  })
+  .catch((err) => {
+    console.log(err);
+  });
 
-app.listen(3000, ()=> {
-  console.log("server start successfully");
+// Start Server
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });
-
- 
-
-
-
