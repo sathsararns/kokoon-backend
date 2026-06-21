@@ -83,6 +83,10 @@ export const loginUser = async (req, res) => {
       token,
       role: user.role,
       isAdmin: user.isAdmin,
+      email: user.email,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      image: user.image,
     });
 
   } catch (error) {
