@@ -19,10 +19,7 @@ const bookingSchema = new mongoose.Schema(
       required: true,
     },
 
-    description: {
-      type: String,
-      required: true,
-    },
+    description: String,
 
     date: {
       type: Date,
@@ -38,6 +35,4 @@ const bookingSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-const Booking = mongoose.model("Booking", bookingSchema);
-
-export default Booking;
+export default mongoose.model("Booking", bookingSchema);

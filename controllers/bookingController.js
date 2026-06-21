@@ -1,10 +1,10 @@
-import Booking from "../models/Booking.js";
+import Booking from "../models/booking.js";
 
-// CREATE BOOKING
-export async function createBooking(req, res) {
+// CREATE BOOKING (Customer)
+export const createBooking = async (req, res) => {
   try {
     const booking = new Booking({
-      customerId: req.user.id, // from JWT
+      customerId: req.user.id,
       providerId: req.body.providerId,
       serviceName: req.body.serviceName,
       description: req.body.description,
@@ -20,30 +20,37 @@ export async function createBooking(req, res) {
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
-}
+};
 
-// GET CUSTOMER BOOKINGS
-export async function getCustomerBookings(req, res) {
-  try {
-    const bookings = await Booking.find({
-      customerId: req.user.id,
-    }).populate("providerId");
-
-    res.json(bookings);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-}
-
-// GET PROVIDER BOOKINGS
-export async function getProviderBookings(req, res) {
+// GET BOOKINGS (Provider)
+export const getProviderBookings = async (req, res) => {
   try {
     const bookings = await Booking.find({
       providerId: req.user.id,
-    }).populate("customerId");
+    }).populate("customerId", "email firstName lastName");
 
     res.json(bookings);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
-}
+};
+
+// UPDATE STATUS (Provider)
+export const updateBookingStatus = async (req, res) => {
+  try {
+    const { status } = req.body;
+
+    const booking = await Booking.findByIdAndUpdate(
+      req.params.id,
+      { status },
+      { new: true }
+    );
+
+    res.json({
+      message: "Status updated",
+      booking,
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};

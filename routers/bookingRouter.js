@@ -1,17 +1,19 @@
 import express from "express";
 import {
   createBooking,
-  getCustomerBookings,
   getProviderBookings,
+  updateBookingStatus,
 } from "../controllers/bookingController.js";
 
 const router = express.Router();
 
-// create booking
+// customer creates booking
 router.post("/", createBooking);
 
-// get bookings
-router.get("/customer", getCustomerBookings);
-router.get("/provider", getProviderBookings);
+// provider sees bookings
+router.get("/", getProviderBookings);
+
+// provider updates booking status
+router.put("/:id", updateBookingStatus);
 
 export default router;
