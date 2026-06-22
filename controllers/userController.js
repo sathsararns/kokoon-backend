@@ -16,19 +16,22 @@ function isStrongPassword(password) {
 // REGISTER
 export const createUser = async (req, res) => {
   try {
+    console.log("BODY:", req.body);
+
     const { email, password } = req.body;
 
+    // ✅ FIX: define existing user
     const existing = await User.findOne({ email });
 
     if (existing) {
       return res.status(400).json({ message: "User already exists" });
     }
 
-    // ❌ PASSWORD CHECK
+    // password check
     if (!isStrongPassword(password)) {
       return res.status(400).json({
         message:
-          "Password must be 8+ chars with uppercase, lowercase, number & symbol"
+          "Password must be 8+ chars with uppercase, lowercase, number & symbol",
       });
     }
 
@@ -46,6 +49,7 @@ export const createUser = async (req, res) => {
     });
 
   } catch (error) {
+    console.log("REGISTER ERROR:", error);
     res.status(500).json({ message: error.message });
   }
 };
@@ -99,12 +103,56 @@ export const getProfile = async (req, res) => {
     const user = await User.findById(req.user.id).select("-password");
 
     if (!user) {
-      return res.status(404).json({ message: "User not found" });
+      return res.status(404).json({
+        message: "User not found",
+      });
     }
 
     res.json(user);
 
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
+
+// 🔥 ADD THIS BELOW getProfile
+export const updateProfile = async (req, res) => {
+  try {
+    const {
+      firstName,
+      lastName,
+      phone,
+      address,
+      location,
+      image,
+    } = req.body;
+
+    const updatedUser = await User.findByIdAndUpdate(
+      req.user.id,
+      {
+        firstName,
+        lastName,
+        phone,
+        address,
+        location,
+        image,
+      },
+      { new: true }
+    ).select("-password");
+
+    if (!updatedUser) {
+      return res.status(404).json({
+        message: "User not found",
+      });
+    }
+
+    res.json(updatedUser);
+
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
   }
 };
