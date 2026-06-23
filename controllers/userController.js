@@ -120,39 +120,27 @@ export const getProfile = async (req, res) => {
 // 🔥 ADD THIS BELOW getProfile
 export const updateProfile = async (req, res) => {
   try {
-    const {
-      firstName,
-      lastName,
-      phone,
-      address,
-      location,
-      image,
-    } = req.body;
 
     const updatedUser = await User.findByIdAndUpdate(
       req.user.id,
       {
-        firstName,
-        lastName,
-        phone,
-        address,
-        location,
-        image,
+        firstName: req.body.firstName,
+        lastName: req.body.lastName,
+        phone: req.body.phone,
+        address: req.body.address,
+        location: req.body.location,
+        image: req.body.image || undefined,
       },
-      { new: true }
+      {
+        new: true,
+      }
     ).select("-password");
-
-    if (!updatedUser) {
-      return res.status(404).json({
-        message: "User not found",
-      });
-    }
 
     res.json(updatedUser);
 
-  } catch (error) {
+  } catch (err) {
     res.status(500).json({
-      message: error.message,
+      message: err.message,
     });
   }
 };
